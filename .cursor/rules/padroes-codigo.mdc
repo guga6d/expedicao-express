@@ -1,0 +1,30 @@
+---
+description: Nomenclatura, tipagem e organização modular do código
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Padrões de código (RNF25 / RNF26)
+
+## Nomenclatura
+
+| Tipo | Convenção | Exemplo |
+|------|-----------|---------|
+| Arquivo / pasta | kebab-case | `atualizar-status.ts` |
+| Componente React | PascalCase | `BadgeStatus.tsx` |
+| Tipo / interface domínio | PascalCase pt-BR | `Encomenda`, `StatusEncomenda` |
+| Campo / variável | camelCase pt-BR | `codigoRastreamento`, `statusAtual` |
+| Constante | SCREAMING_SNAKE | `STATUS_ENCOMENDA` |
+
+## Tipagem
+
+- Proibido `any`; preferir tipos do domínio e `unknown` + narrowing
+- Reutilize união de status de `src/domain` — não redefina strings soltas
+
+## Modularidade
+
+- Um módulo, uma responsabilidade
+- Regras de negócio: funções puras em `src/domain` (testáveis, sem I/O)
+- Persistência: `src/server/repositories`
+- Orquestração: `src/server/services` ou server actions
+- UI não contém regras de transição de status

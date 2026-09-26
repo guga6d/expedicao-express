@@ -1,0 +1,41 @@
+---
+description: Convenções Next.js App Router — RSC, server actions, rotas e loading
+globs: src/app/**
+alwaysApply: false
+---
+
+# Next.js App Router
+
+## Componentes
+
+- Server Components por padrão
+- `'use client'` só com interação (forms, mapa, drag de rota)
+- Dados: buscar em `src/server/**`, não no client
+
+## Mutações (RNF08)
+
+```ts
+'use server'
+// ... validar perfil + domínio ...
+await atualizarStatus(...)
+revalidatePath('/entregador/entregas')
+revalidatePath(`/encomendas/${id}`)
+```
+
+Após status OK, a próxima consulta deve refletir o valor novo imediatamente.
+
+## Rotas e acesso
+
+| Área | Prefixo | Auth |
+|------|---------|------|
+| Pública | `/rastreio/[codigo]` | nenhuma (RF26) |
+| Gestor | `/(gestor)/...` | sessão + perfil gestor (RNF10/RNF11) |
+| Entregador | `/(entregador)/...` | sessão + perfil entregador |
+
+Após logout, redirecionar e bloquear áreas restritas (RNF14).
+
+## UX de carregamento (RNF04 / RNF09)
+
+- `loading.tsx` e `error.tsx` nas rotas principais
+- Evitar waterfalls; preferir fetches paralelos no server
+- Consultas comuns alvo ≤ 2s (RNF07)

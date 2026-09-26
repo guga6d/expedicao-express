@@ -1,0 +1,33 @@
+---
+description: UI responsiva, acessibilidade, feedback e identificação de status
+globs: src/components/**,**/*.tsx
+alwaysApply: false
+---
+
+# UI e acessibilidade
+
+## Layout e navegação
+
+- Mobile-first; funciona em desktop, tablet e celular (RNF01 / RNF21)
+- Menus claros para gestor e entregador (RNF02)
+- Componentes de `src/components/ui` para consistência (RNF03)
+- Contraste e tamanho de texto legíveis (RNF22)
+
+## Status: nunca só cor (RNF05 / RNF23)
+
+```tsx
+// ❌ BAD
+<span className="bg-green-500 w-3 h-3 rounded-full" />
+
+// ✅ GOOD
+<span className="inline-flex items-center gap-1">
+  <CheckCircle className="h-4 w-4 text-green-600" aria-hidden />
+  <span>Entregue</span>
+</span>
+```
+
+## Formulários e feedback
+
+- Todo campo com `<label>` associado; erros via `aria-describedby` (RNF24)
+- Toast/alert de sucesso e erro em toda mutação (RNF04)
+- Entregador: atualizar status e comprovante em ≤ 2 passos (RNF06)

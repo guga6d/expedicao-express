@@ -1,0 +1,46 @@
+---
+description: Máquina de estados, histórico append-only e invariantes de encomenda
+globs: src/domain/**,**/encomendas/**
+alwaysApply: false
+---
+
+# Domínio — Encomendas
+
+## Status canônicos (RF16)
+
+```ts
+export const STATUS_ENCOMENDA = [
+  'AGUARDANDO_COLETA',
+  'COLETADA',
+  'EM_ROTA',
+  'ENTREGUE',
+  'NAO_ENTREGUE',
+] as const;
+export type StatusEncomenda = (typeof STATUS_ENCOMENDA)[number];
+```
+
+Rótulos pt-BR e ícones ficam em `src/domain/encomenda.ts` (nunca só cor — RNF05/RNF23).
+
+## Transições válidas (RF15)
+
+```
+AGUARDANDO_COLETA → COLETADA
+COLETADA → EM_ROTA
+EM_ROTA → ENTREGUE | NAO_ENTREGUE
+NAO_ENTREGUE → EM_ROTA   // nova tentativa
+ENTREGUE → (final; sem saída)
+```
+
+Rejeite qualquer outra transição no domínio (função pura), não só na UI.
+
+## Invariantes
+
+- **Histórico append-only (RNF15 / RF18):** cada mudança de status cria um novo registro; nunca sobrescreva entradas anteriores
+- **Motivo obrigatório (RF17):** `NAO_ENTREGUE` exige `motivo` não vazio
+- **Edição (RF10):** alterar dados da encomenda só se status ≠ `ENTREGUE`
+- **Código único (RF07 / RNF17):** `codigoRastreamento` único no sistema
+- **Finalização:** `ENTREGUE` exige comprovante associado (RF19–RF21)
+
+## Situação do entregador (RF05)
+
+`DISPONIVEL` | `EM_ROTA` | `INDISPONIVEL`

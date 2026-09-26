@@ -1,0 +1,36 @@
+---
+description: Firebase Auth, Firestore, Storage e regras de acesso por perfil
+globs: src/server/**,src/lib/firebase/**,firestore.rules
+alwaysApply: false
+---
+
+# Firebase — dados e segurança
+
+## Coleções
+
+| Coleção | Uso |
+|---------|-----|
+| `usuarios` | perfil (`gestor` \| `entregador`), vínculo Auth uid |
+| `entregadores` | nome, telefone, situação (RF03–RF05) |
+| `encomendas` | dados + `statusAtual`, `codigoRastreamento`, `entregadorId` |
+| `encomendas/{id}/historico` | append-only: status, data/hora, usuário (RF18) |
+| `encomendas/{id}/comprovante` | recebedor, data, evidência URL (RF19–RF22) |
+
+## Camada de acesso
+
+- Leitura/escrita Firestore **somente** em `src/server/**`
+- Páginas e componentes **nunca** importam Firestore/Admin direto
+- Senhas: apenas Firebase Auth — nunca texto plano (RNF12)
+
+## Regras e permissões
+
+- Toda nova coleção exige entrada em `firestore.rules` (RNF10/RNF11/RNF13)
+- Gestor: CRUD administrativo; entregador: só suas encomendas atribuídas + status/comprovante
+- Logout invalida sessão; áreas restritas bloqueadas (RNF14)
+
+## Integridade
+
+- Histórico: `serverTimestamp()`, create-only, nunca update/delete (RNF15)
+- Comprovante permanece ligado à encomenda (RNF16)
+- Evidência (foto/assinatura) em Storage; URL no documento do comprovante (RF21)
+- `codigoRastreamento` único (RNF17); dados persistem após logout (RNF18)

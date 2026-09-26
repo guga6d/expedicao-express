@@ -1,0 +1,46 @@
+---
+description: Visão geral do Expedição Express — domínio, stack, perfis e mapa de pastas
+alwaysApply: true
+---
+
+# Expedição Express
+
+Sistema web de gestão de entregas (encomendas, entregadores, rotas, rastreio e comprovantes).
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind
+- Firebase Auth, Firestore e Storage
+
+## Glossário
+
+| Termo | Significado |
+|-------|-------------|
+| Gestor | Usuário administrativo (cadastros, atribuições, dashboard) |
+| Entregador | Usuário operacional (status, comprovante, rota) |
+| Encomenda | Pacote com remetente, destinatário, coleta e entrega |
+| Comprovante | Registro digital da entrega (recebedor, data, evidência) |
+| Rota | Sequência de coletas/entregas de um entregador |
+
+## Áreas do sistema
+
+1. **Pública** — `/rastreio/[codigo]` (cliente, sem login) — RF26
+2. **Gestor** — dashboard, encomendas, entregadores, atribuições
+3. **Entregador** — entregas atribuídas, status, comprovante, rota
+
+## Mapa de pastas
+
+```
+src/app/            rotas: (publico), (gestor), (entregador)
+src/components/     ui/ + features (encomendas/, entregadores/)
+src/domain/         tipos + regras puras (sem Firebase)
+src/server/         repositories, services, server actions
+src/lib/firebase/   init client e admin
+```
+
+## Obrigações do agente
+
+- Fonte dos requisitos: [docs/requisitos.md](docs/requisitos.md)
+- Cite o código do requisito (`RF15`, `RNF08`) em commits e PRs
+- Atualize [docs/rastreabilidade.md](docs/rastreabilidade.md) ao concluir um RF/RNF
+- Domínio em português (`Encomenda`, `statusAtual`); arquivos em kebab-case
