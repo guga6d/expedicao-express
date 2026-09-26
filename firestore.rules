@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function isGestor() {
+      return isSignedIn() && userDoc().perfil == 'gestor';
+    }
+
+    function isEntregador() {
+      return isSignedIn() && userDoc().perfil == 'entregador';
+    }
+
+    match /usuarios/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isGestor());
+      allow write: if isGestor();
+    }
+
+    match /entregadores/{entregadorId} {
+      allow read: if isSignedIn();
+      allow write: if isGestor();
+    }
+
+    // Rastreio público (RF26): leitura por código via Admin SDK no server, não pelo client.
+    match /encomendas/{encomendaId} {
+      allow read: if isGestor()
+        || (isEntregador() && resource.data.entregadorId == request.auth.uid);
+
+      allow create, delete: if isGestor();
+      allow update: if isGestor()
+        || (isEntregador()
+          && resource.data.entregadorId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['statusAtual', 'motivoNaoEntrega', 'atualizadaEm']));
+
+      match /historico/{eventoId} {
+        allow read: if isGestor()
+          || (isEntregador()
+              && get(/databases/$(database)/documents/encomendas/$(encomendaId)).data.entregadorId
+                 == request.auth.uid);
+        allow create: if isGestor() || isEntregador();
+        allow update, delete: if false; // RNF15 append-only
+      }
+
+      match /comprovante/{docId} {
+        allow read: if isGestor()
+          || (isEntregador()
+              && get(/databases/$(database)/documents/encomendas/$(encomendaId)).data.entregadorId
+                 == request.auth.uid);
+        allow create: if isEntregador() || isGestor();
+        allow update, delete: if isGestor();
+      }
+    }
+  }
+}

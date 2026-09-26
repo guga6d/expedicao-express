@@ -8,8 +8,8 @@ Atualize esta matriz ao concluir um requisito (skill `implementar-requisito` ou 
 
 | Código | Título | Status | Arquivos / notas |
 |--------|--------|--------|------------------|
-| RF01 | Autenticação | pendente | |
-| RF02 | Encerramento de sessão | pendente | |
+| RF01 | Autenticação | implementado | `src/components/auth/formulario-login.tsx`, `src/server/actions/auth-actions.ts`, `src/server/auth/sessao.ts`, `src/app/(publico)/login/page.tsx` |
+| RF02 | Encerramento de sessão | parcial | `encerrarSessaoAction` + botão Sair em dashboard/entregas; falta reforço visual em todas as áreas |
 | RF03 | Cadastro de entregadores | pendente | |
 | RF04 | Consulta de entregadores | pendente | |
 | RF05 | Situação do entregador | pendente | |
@@ -57,11 +57,11 @@ Atualize esta matriz ao concluir um requisito (skill `implementar-requisito` ou 
 | RNF07 | Tempo de resposta | pendente | |
 | RNF08 | Atualização das informações | pendente | |
 | RNF09 | Carregamento das páginas | pendente | |
-| RNF10 | Controle de acesso | pendente | |
-| RNF11 | Perfis de acesso | pendente | |
-| RNF12 | Proteção de credenciais | pendente | |
+| RNF10 | Controle de acesso | parcial | layouts `(gestor)` e `(entregador)` exigem sessão |
+| RNF11 | Perfis de acesso | parcial | redirect por `perfil` após login; guards nos layouts |
+| RNF12 | Proteção de credenciais | implementado | senha só no Firebase Auth; nunca armazenada no app |
 | RNF13 | Proteção das informações | pendente | |
-| RNF14 | Sessão do usuário | pendente | |
+| RNF14 | Sessão do usuário | parcial | cookie httpOnly `ee_sessao`; logout limpa cookie e redireciona |
 | RNF15 | Integridade do histórico | pendente | |
 | RNF16 | Integridade do comprovante | pendente | |
 | RNF17 | Identificação única | pendente | |
