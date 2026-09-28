@@ -40,8 +40,6 @@ export function motivoObrigatorio(status: StatusEncomenda): boolean {
   return status === 'NAO_ENTREGUE';
 }
 
-export type SituacaoEntregador = 'DISPONIVEL' | 'EM_ROTA' | 'INDISPONIVEL';
-
 export interface Endereco {
   logradouro: string;
   numero: string;

@@ -1,11 +1,12 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { rotaAposLogin } from '@/domain/usuario';
 import {
   criarCookieSessao,
-  limparCookieSessao,
+  encerrarSessao,
   obterSessao,
 } from '@/server/auth/sessao';
 
@@ -33,10 +34,11 @@ export async function criarSessaoAction(
   }
 }
 
-/** RF02 — preparado; botão de logout nas telas autenticadas. */
+/** RF02 — logout: invalida a sessão no servidor e volta ao login. */
 export async function encerrarSessaoAction(): Promise<void> {
-  await limparCookieSessao();
-  redirect('/login');
+  await encerrarSessao();
+  revalidatePath('/', 'layout');
+  redirect('/login?saiu=1');
 }
 
 export async function redirecionarSeAutenticado(): Promise<void> {

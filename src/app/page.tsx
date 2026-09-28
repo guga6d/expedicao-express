@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-12">
@@ -11,24 +13,24 @@ export default function HomePage() {
       </header>
 
       <nav aria-label="Atalhos" className="grid gap-3 sm:grid-cols-3">
-        <a
+        <Link
           href="/login"
           className="rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
         >
           Entrar (RF01)
-        </a>
-        <a
+        </Link>
+        <Link
           href="/rastreio"
           className="rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
         >
           Rastrear encomenda (RF26)
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard"
           className="rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
         >
           Painel do gestor (RF32)
-        </a>
+        </Link>
       </nav>
     </main>
   );

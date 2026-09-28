@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { CabecalhoArea } from '@/components/ui/cabecalho-area';
 import { rotaAposLogin } from '@/domain/usuario';
 import { obterSessao } from '@/server/auth/sessao';
 
@@ -16,5 +17,10 @@ export default async function EntregadorLayout({
     redirect(rotaAposLogin(usuario.perfil));
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <CabecalhoArea usuario={usuario} />
+      {children}
+    </>
+  );
 }

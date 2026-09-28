@@ -67,7 +67,24 @@ export async function exigirSessao(
   return usuario;
 }
 
-export async function limparCookieSessao(): Promise<void> {
+/**
+ * Revoga os refresh tokens do usuário (encerra todas as sessões dele, pois
+ * `verifySessionCookie` checa revogação) e remove o cookie local — RF02 / RNF14.
+ * Falhas na revogação não impedem a remoção do cookie.
+ */
+export async function encerrarSessao(): Promise<void> {
   const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(COOKIE_SESSAO)?.value;
+
+  if (sessionCookie) {
+    try {
+      const auth = getAdminAuth();
+      const decoded = await auth.verifySessionCookie(sessionCookie);
+      await auth.revokeRefreshTokens(decoded.sub);
+    } catch {
+      // cookie já inválido/expirado: basta removê-lo
+    }
+  }
+
   cookieStore.delete(COOKIE_SESSAO);
 }
