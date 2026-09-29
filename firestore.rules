@@ -29,6 +29,11 @@ service cloud.firestore {
     }
 
     // Rastreio público (RF26): leitura por código via Admin SDK no server, não pelo client.
+    // RF07 / RNF17: reserva de códigos únicos; só o servidor (Admin SDK) acessa.
+    match /codigosRastreamento/{codigo} {
+      allow read, write: if false;
+    }
+
     match /encomendas/{encomendaId} {
       allow read: if isGestor()
         || (isEntregador() && resource.data.entregadorId == request.auth.uid);

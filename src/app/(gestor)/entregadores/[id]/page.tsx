@@ -4,18 +4,13 @@ import { notFound } from 'next/navigation';
 import { BadgeSituacaoEntregador } from '@/components/entregadores/badge-situacao-entregador';
 import { FormularioSituacaoEntregador } from '@/components/entregadores/formulario-situacao-entregador';
 import { formatarTelefone } from '@/domain/entregador';
+import { formatarDataHora } from '@/domain/formatacao';
 import { exigirSessaoNaPagina } from '@/server/auth/sessao';
 import { obterEntregador } from '@/server/services/entregadores-service';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
-
-const FORMATO_DATA = new Intl.DateTimeFormat('pt-BR', {
-  dateStyle: 'short',
-  timeStyle: 'short',
-  timeZone: 'America/Sao_Paulo',
-});
 
 /** RF04 — informações de um entregador. */
 export default async function EntregadorPage({ params }: Props) {
@@ -54,9 +49,7 @@ export default async function EntregadorPage({ params }: Props) {
           Cadastrado em
         </dt>
         <dd>
-          {entregador.criadoEm
-            ? FORMATO_DATA.format(new Date(entregador.criadoEm))
-            : '—'}
+          {formatarDataHora(entregador.criadoEm)}
         </dd>
       </dl>
 
