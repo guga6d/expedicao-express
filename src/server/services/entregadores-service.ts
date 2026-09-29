@@ -1,8 +1,55 @@
 import 'server-only';
 
-import type { DadosNovoEntregador } from '@/domain/entregador';
+import {
+  filtrarEntregadores,
+  ordenarEntregadoresPorNome,
+  type DadosNovoEntregador,
+  type Entregador,
+  type SituacaoEntregador,
+} from '@/domain/entregador';
 import { getAdminAuth } from '@/lib/firebase/admin';
-import { salvarEntregadorComUsuario } from '@/server/repositories/entregadores-repository';
+import {
+  atualizarSituacaoEntregador,
+  buscarEntregadorPorId,
+  listarEntregadores,
+  salvarEntregadorComUsuario,
+} from '@/server/repositories/entregadores-repository';
+
+export class EntregadorNaoEncontradoError extends Error {
+  constructor() {
+    super('Entregador não encontrado.');
+    this.name = 'EntregadorNaoEncontradoError';
+  }
+}
+
+/** RF05 — define a situação do entregador (disponível, em rota, indisponível). */
+export async function definirSituacaoEntregador(
+  id: string,
+  situacao: SituacaoEntregador,
+): Promise<Entregador> {
+  const entregador = await buscarEntregadorPorId(id);
+  if (!entregador) throw new EntregadorNaoEncontradoError();
+  if (entregador.situacao === situacao) return entregador;
+
+  await atualizarSituacaoEntregador(id, situacao);
+  return { ...entregador, situacao };
+}
+
+/** RF04 — relação de entregadores, opcionalmente filtrada por um termo. */
+export async function consultarEntregadores(
+  termo = '',
+): Promise<{ entregadores: Entregador[]; total: number }> {
+  const todos = await listarEntregadores();
+  return {
+    entregadores: ordenarEntregadoresPorNome(filtrarEntregadores(todos, termo)),
+    total: todos.length,
+  };
+}
+
+/** RF04 — informações de um entregador. */
+export async function obterEntregador(id: string): Promise<Entregador | null> {
+  return buscarEntregadorPorId(id);
+}
 
 export class EmailJaCadastradoError extends Error {
   constructor() {

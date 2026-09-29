@@ -1,8 +1,13 @@
 import 'server-only';
 
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-import type { PerfilUsuario, Usuario } from '@/domain/usuario';
+import {
+  rotaAposLogin,
+  type PerfilUsuario,
+  type Usuario,
+} from '@/domain/usuario';
 import { getAdminAuth } from '@/lib/firebase/admin';
 import { buscarUsuarioPorId } from '@/server/repositories/usuarios-repository';
 
@@ -64,6 +69,20 @@ export async function exigirSessao(
   if (perfil && usuario.perfil !== perfil) {
     throw new Error('Perfil sem permissao');
   }
+  return usuario;
+}
+
+/**
+ * Para Server Components: redireciona em vez de lançar erro. Página e layout
+ * renderizam em paralelo, então o guard do layout não impede a leitura de
+ * dados feita pela página.
+ */
+export async function exigirSessaoNaPagina(
+  perfil: PerfilUsuario,
+): Promise<Usuario> {
+  const usuario = await obterSessao();
+  if (!usuario) redirect('/login');
+  if (usuario.perfil !== perfil) redirect(rotaAposLogin(usuario.perfil));
   return usuario;
 }
 

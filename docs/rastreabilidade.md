@@ -11,8 +11,8 @@ Atualize esta matriz ao concluir um requisito (skill `implementar-requisito` ou 
 | RF01 | Autenticação | implementado | `src/components/auth/formulario-login.tsx`, `src/server/actions/auth-actions.ts`, `src/server/auth/sessao.ts`, `src/app/(publico)/login/page.tsx` |
 | RF02 | Encerramento de sessão | implementado | `src/components/auth/botao-sair.tsx`, `src/components/ui/cabecalho-area.tsx` (em `(gestor)/layout.tsx` e `(entregador)/layout.tsx`), `src/server/actions/auth-actions.ts` (`encerrarSessaoAction`), `src/server/auth/sessao.ts` (`encerrarSessao`), `src/app/(publico)/login/page.tsx` (confirmação `?saiu=1`) |
 | RF03 | Cadastro de entregadores | implementado | `src/domain/entregador.ts` (tipos, `validarNovoEntregador`), `src/server/repositories/entregadores-repository.ts` (batch `entregadores/{uid}` + `usuarios/{uid}`), `src/server/services/entregadores-service.ts` (cria conta no Firebase Auth; desfaz se o Firestore falhar), `src/server/actions/entregadores-actions.ts`, `src/components/entregadores/formulario-entregador.tsx`, `src/app/(gestor)/entregadores/novo/page.tsx`; id do entregador = uid do Auth |
-| RF04 | Consulta de entregadores | pendente | |
-| RF05 | Situação do entregador | pendente | |
+| RF04 | Consulta de entregadores | implementado | `src/domain/entregador.ts` (`ordenarEntregadoresPorNome`, `filtrarEntregadores`), `src/server/repositories/entregadores-repository.ts` (`listarEntregadores`, `buscarEntregadorPorId`), `src/server/services/entregadores-service.ts` (`consultarEntregadores`, `obterEntregador`), `src/components/entregadores/lista-entregadores.tsx` (tabela no desktop / cartões no mobile), `src/components/entregadores/badge-situacao-entregador.tsx`, `src/app/(gestor)/entregadores/page.tsx` (lista + busca `?busca=` por nome, telefone ou e-mail), `src/app/(gestor)/entregadores/[id]/page.tsx` (detalhes; 404 se não existir), link no dashboard |
+| RF05 | Situação do entregador | implementado | Definida no cadastro (RF03) e alterável depois: `src/server/repositories/entregadores-repository.ts` (`atualizarSituacaoEntregador`, grava `atualizadoEm`), `src/server/services/entregadores-service.ts` (`definirSituacaoEntregador`, `EntregadorNaoEncontradoError`), `src/server/actions/entregadores-actions.ts` (`definirSituacaoEntregadorAction`, só gestor, `revalidatePath` da lista e do detalhe), `src/components/entregadores/formulario-situacao-entregador.tsx`, seção "Alterar situação" em `src/app/(gestor)/entregadores/[id]/page.tsx`; situação exibida com ícone + texto (`badge-situacao-entregador.tsx`) |
 | RF06 | Cadastro de encomendas | pendente | |
 | RF07 | Código de rastreamento | pendente | |
 | RF08 | Consulta de encomendas | pendente | |
@@ -51,13 +51,13 @@ Atualize esta matriz ao concluir um requisito (skill `implementar-requisito` ou 
 | RNF01 | Responsividade | pendente | |
 | RNF02 | Facilidade de navegação | pendente | |
 | RNF03 | Consistência visual | pendente | |
-| RNF04 | Feedback ao usuário | parcial | login, logout (`?saiu=1`) e cadastro de entregador com mensagens de sucesso/erro |
+| RNF04 | Feedback ao usuário | parcial | login, logout (`?saiu=1`), cadastro de entregador e alteração de situação do entregador com mensagens de sucesso/erro |
 | RNF05 | Identificação dos status | pendente | |
 | RNF06 | Facilidade de operação | pendente | |
 | RNF07 | Tempo de resposta | pendente | |
 | RNF08 | Atualização das informações | pendente | |
 | RNF09 | Carregamento das páginas | pendente | |
-| RNF10 | Controle de acesso | parcial | layouts `(gestor)` e `(entregador)` exigem sessão |
+| RNF10 | Controle de acesso | parcial | layouts `(gestor)` e `(entregador)` exigem sessão; páginas que leem dados chamam `exigirSessaoNaPagina` (`src/server/auth/sessao.ts`), pois layout e página renderizam em paralelo |
 | RNF11 | Perfis de acesso | parcial | redirect por `perfil` após login; guards nos layouts |
 | RNF12 | Proteção de credenciais | implementado | senha só no Firebase Auth; nunca armazenada no app |
 | RNF13 | Proteção das informações | pendente | |
@@ -70,7 +70,7 @@ Atualize esta matriz ao concluir um requisito (skill `implementar-requisito` ou 
 | RNF20 | Compatibilidade com navegadores | pendente | |
 | RNF21 | Acesso móvel | pendente | |
 | RNF22 | Legibilidade | pendente | |
-| RNF23 | Identificação além das cores | pendente | |
-| RNF24 | Formulários | parcial | login e cadastro de entregador: `<label>` em todos os campos, erros por campo via `aria-describedby`/`aria-invalid` |
+| RNF23 | Identificação além das cores | parcial | situação do entregador com ícone + texto (`badge-situacao-entregador.tsx`); `badge-status.tsx` pronto para encomendas |
+| RNF24 | Formulários | parcial | login, cadastro de entregador e busca de entregadores: `<label>` em todos os campos, erros por campo via `aria-describedby`/`aria-invalid` |
 | RNF25 | Organização do sistema | pendente | |
 | RNF26 | Padronização | pendente | |

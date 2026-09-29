@@ -7,6 +7,12 @@ export default function DashboardPage() {
 
       <nav aria-label="Ações do gestor" className="grid gap-3 sm:grid-cols-3">
         <Link
+          href="/entregadores"
+          className="rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+        >
+          Entregadores
+        </Link>
+        <Link
           href="/entregadores/novo"
           className="rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
         >

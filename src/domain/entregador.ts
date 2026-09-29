@@ -62,6 +62,43 @@ export function formatarTelefone(telefone: string): string {
   return telefone;
 }
 
+function normalizarBusca(texto: string): string {
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+/** RF04 — relação de entregadores em ordem alfabética (ignora acentos/caixa). */
+export function ordenarEntregadoresPorNome(
+  entregadores: readonly Entregador[],
+): Entregador[] {
+  return [...entregadores].sort((a, b) =>
+    a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }),
+  );
+}
+
+/**
+ * RF04 — filtra por nome, e-mail ou telefone. Termo vazio devolve a lista
+ * inteira; termos numéricos também casam com o telefone sem máscara.
+ */
+export function filtrarEntregadores(
+  entregadores: readonly Entregador[],
+  termo: string,
+): Entregador[] {
+  const busca = normalizarBusca(termo);
+  if (!busca) return [...entregadores];
+
+  const digitos = normalizarTelefone(busca);
+  return entregadores.filter(
+    (e) =>
+      normalizarBusca(e.nome).includes(busca) ||
+      e.email.includes(busca) ||
+      (digitos.length > 0 && e.telefone.includes(digitos)),
+  );
+}
+
 /** RF03 — valida os dados básicos do cadastro de entregador. */
 export function validarNovoEntregador(entrada: {
   nome: unknown;

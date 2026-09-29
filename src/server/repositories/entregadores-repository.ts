@@ -1,9 +1,59 @@
 import 'server-only';
 
-import { FieldValue } from 'firebase-admin/firestore';
+import {
+  FieldValue,
+  Timestamp,
+  type DocumentSnapshot,
+} from 'firebase-admin/firestore';
 
-import type { SituacaoEntregador } from '@/domain/entregador';
+import {
+  isSituacaoEntregador,
+  type Entregador,
+  type SituacaoEntregador,
+} from '@/domain/entregador';
 import { getAdminDb } from '@/lib/firebase/admin';
+
+function paraEntregador(snap: DocumentSnapshot): Entregador | null {
+  const data = snap.data();
+  if (!data || !isSituacaoEntregador(data.situacao)) return null;
+
+  return {
+    id: snap.id,
+    nome: typeof data.nome === 'string' ? data.nome : '',
+    telefone: typeof data.telefone === 'string' ? data.telefone : '',
+    email: typeof data.email === 'string' ? data.email : '',
+    situacao: data.situacao,
+    criadoEm:
+      data.criadoEm instanceof Timestamp
+        ? data.criadoEm.toDate().toISOString()
+        : '',
+  };
+}
+
+export async function atualizarSituacaoEntregador(
+  id: string,
+  situacao: SituacaoEntregador,
+): Promise<void> {
+  await getAdminDb().collection('entregadores').doc(id).update({
+    situacao,
+    atualizadoEm: FieldValue.serverTimestamp(),
+  });
+}
+
+export async function listarEntregadores(): Promise<Entregador[]> {
+  const snap = await getAdminDb().collection('entregadores').get();
+  return snap.docs
+    .map(paraEntregador)
+    .filter((e): e is Entregador => e !== null);
+}
+
+export async function buscarEntregadorPorId(
+  id: string,
+): Promise<Entregador | null> {
+  const snap = await getAdminDb().collection('entregadores').doc(id).get();
+  if (!snap.exists) return null;
+  return paraEntregador(snap);
+}
 
 export interface NovoRegistroEntregador {
   uid: string;
